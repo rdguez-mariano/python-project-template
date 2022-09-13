@@ -1,0 +1,16 @@
+{
+  "project_name": "project_template",
+  "repo_name": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
+  "pkg_shelf": "rdguez_mariano",
+  "pkg_name": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+  "project_short_description": "A python project created with CookieCutter",
+  "full_name": "Mariano Rodriguez",
+  "email": "rdguez.mariano@gmail.com",
+  "version": "0.0.0",
+  "enable_lightning_repo": "y",
+  "enable_mypy": "y",
+  "enable_pydantic": "n",
+  "enable_github_action_ci": "y",
+  "enable_protect_branches": "n",
+  "enable_sphinx_docs": "y"
+}

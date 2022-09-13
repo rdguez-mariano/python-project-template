@@ -1,0 +1,6 @@
+# Select Pytorch Lightning's data module
+importer.datamodule_name="black_or_white"
+
+# Data module args
+datamodule.batch_size=16
+datamodule.num_workers=4

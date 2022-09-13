@@ -1,0 +1,11 @@
+# Select Pytorch Lightning's module
+importer.module_name="Dummy"
+
+# Pytorch Lightning Trainer args
+Trainer.max_epochs=3
+Trainer.gpus=1
+Trainer.accelerator="gpu"
+
+# Module args
+module.hidden_size=128
+module.num_classes=2

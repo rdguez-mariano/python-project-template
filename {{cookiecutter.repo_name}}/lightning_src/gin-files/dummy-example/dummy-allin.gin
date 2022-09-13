@@ -1,0 +1,28 @@
+# Select Pytorch Lightning's module and data module (optional)
+importer.module_name="Dummy"
+importer.datamodule_name="black_or_white"
+
+# if no match for name convention
+# importer.module_name="Dummy"
+# importer.datamodule_name="BlackOrWhite"
+# importer.datamodule_relpath="data.datamodules.black_or_white"
+
+# # Tunning with Pytorch Lightning
+# Trainer.auto_lr_find=True
+# Trainer.auto_scale_batch_size="binsearch"
+
+# Pytorch Lightning Trainer args
+Trainer.max_epochs=3
+Trainer.gpus=1
+Trainer.accelerator="gpu"
+
+# # For debug
+# Trainer.fast_dev_run=True
+
+# Module args
+module.hidden_size=128
+module.num_classes=2
+
+# Data module args
+datamodule.batch_size=16
+datamodule.num_workers=4

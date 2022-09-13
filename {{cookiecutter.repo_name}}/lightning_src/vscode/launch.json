@@ -1,0 +1,56 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${env.PYTHONPATH}:${workspaceRoot}/src/",
+            },
+            "justMyCode": true
+        },
+        {
+            "name": "runner",
+            "type": "python",
+            "request": "launch",
+            "program": "src/{{cookiecutter.pkg_shelf}}/{{cookiecutter.pkg_name}}/runner.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${env.PYTHONPATH}:${workspaceRoot}/src/",
+            },
+            "args": [
+                "--gin_file", "${config:CONFIGPATH}/dummy-allin.gin",
+                // "--gin_file", "${config:CONFIGPATH}/dummy-module.gin",
+                // "--gin_file", "${config:CONFIGPATH}/dummy-datamodule.gin",
+                // "--gin_param", "Trainer.auto_lr_find = True",
+                // "--run", "tune",
+                "--run", "fit",
+                // "--run", "test",
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "export",
+            "type": "python",
+            "request": "launch",
+            "program": "src/{{cookiecutter.pkg_shelf}}/{{cookiecutter.pkg_name}}/export.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${env.PYTHONPATH}:${workspaceRoot}/src/",
+            },
+            "args": [
+                // "--gin_file", "${config:CONFIGPATH}/dummy-allin.gin",
+                "--gin_file", "${config:CONFIGPATH}/dummy-module.gin",
+                "--ckpt_path", "${workspaceRoot}/lightning_logs/version_0/checkpoints/epoch=2-step=189.ckpt",
+                "--ckpt_path", "${workspaceRoot}/lightning_logs/version_1/checkpoints/epoch=2-step=189.ckpt",
+            ],
+            "justMyCode": true
+        },
+    ]
+}

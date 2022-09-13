@@ -1,0 +1,87 @@
+[tool.poetry]
+name = "{{ cookiecutter.pkg_name }}"
+version = "{{ cookiecutter.version }}"
+repository = "https://github.com/rdguez-mariano/{{ cookiecutter.repo_name }}"
+description = "{{ cookiecutter.project_short_description }}"
+authors = ["{{ cookiecutter.full_name.replace('\"', '\\\"') }} <{{ cookiecutter.email }}>"]
+readme = "README.md"
+packages = [{ include = "{{cookiecutter.pkg_shelf}}", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+{%- if cookiecutter.enable_pydantic == 'y' %}
+pydantic = "^1.8.2"
+{%- endif %}
+{%- if cookiecutter.enable_lightning_repo == 'y' %}
+pytorch-lightning = "^1.4.8"
+torch = "^1.12"
+gin-config = "^0.5.0"
+{%- endif %}
+
+[tool.poetry.dev-dependencies]
+black = {version = "^21.12b0", allow-prereleases = true}
+flake8 = "^4.0.1"
+isort = "^5.10.1"
+{%- if cookiecutter.enable_mypy == 'y' %}
+mypy = "^0.910"
+{%- endif %}
+pre-commit = "^2.16.0"
+pytest = "^6.2"
+pytest-cov = "^3.0.0"
+{%- if cookiecutter.enable_sphinx_docs == 'y' %}
+Sphinx = "^4.3.1"
+myst-nb = "^0.13.1"
+sphinx-autoapi = "^1.8.4"
+sphinx-rtd-theme = "^1.0.0"
+{%- endif %}
+
+[tool.black]
+target-version = ['py36', 'py37', 'py38', 'py39']
+line_length = 79
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 79
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+
+[tool.pytest.ini_options]
+addopts = "--cov={{cookiecutter.pkg_shelf}}.{{cookiecutter.pkg_name}} --cov-report xml"
+
+# Uncomment below section to enforce a minimum test coverage
+# [tool.coverage.report]
+# fail_under = 75
+
+[tool.semantic_release]
+version_toml = "pyproject.toml:tool.poetry.version"
+# to track and update version in other files:
+# version_variable = ["some/file:__version__", ...]
+branch = "main"
+changelog_file = "CHANGELOG.md"
+build_command = "pip install poetry && poetry build"
+dist_path = "dist/"
+upload_to_pypi = false
+remove_dist = false
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

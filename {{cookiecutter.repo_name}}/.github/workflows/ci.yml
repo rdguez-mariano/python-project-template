@@ -1,0 +1,138 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  commitlint:
+    name: Run commitlint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: wagoid/commitlint-github-action@v4
+
+  pre-commit:
+    name: Run pre-commit checks
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - uses: actions/checkout@v2
+    - name: Restore pre-commit cache
+      id: cached-pre-commit
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit-{{ "${{" }} hashFiles('.pre-commit-config.yaml') {{ "}}" }}
+    - name: Install pre-commit
+      run: pip install pre-commit
+    - name: Run checks
+      run: pre-commit run --all-files
+
+  pytest:
+    name: Run pytest
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - uses: actions/checkout@v2
+    - name: Restore cached Poetry installation
+      uses: actions/cache@v2
+      with:
+        path: ~/.local
+        key: poetry
+    - uses: snok/install-poetry@v1
+      name: Install and configure Poetry
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        virtualenvs-path: .venv
+        installer-parallel: true
+    - name: Restore cached dependencies
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: poetry-venv-{{ "${{" }} runner.os {{ "}}" }}-{{ "${{" }} hashFiles('**/poetry.lock') {{ "}}" }}
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+    - name: Install package
+      run: poetry install --no-interaction
+    - name: Run test suite
+      run: poetry run pytest
+{% if cookiecutter.enable_sphinx_docs == 'y' %}
+  sphinx:
+    name: Build documentation with Sphinx
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - uses: actions/checkout@v2
+    - name: Restore cached Poetry installation
+      uses: actions/cache@v2
+      with:
+        path: ~/.local
+        key: poetry
+    - uses: snok/install-poetry@v1
+      name: Install and configure Poetry
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        virtualenvs-path: .venv
+        installer-parallel: true
+    - name: Restore cached dependencies
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: poetry-venv-{{ "${{" }} runner.os {{ "}}" }}-{{ "${{" }} hashFiles('**/poetry.lock') {{ "}}" }}
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root
+    - name: Install package
+      run: poetry install --no-interaction
+    - name: Build documentation
+      run: poetry run make html --directory docs/
+{% endif %}
+  release:
+    needs: [commitlint, pre-commit, pytest{%- if cookiecutter.enable_sphinx_docs == 'y' -%}, sphinx{%- endif -%}]
+    # Only run this job if the "main" branch changes
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Prepare release
+      run: |
+          pip install python-semantic-release
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          semantic-release publish
+    - name: Install Twine
+      if: hashFiles('dist/*.whl') != ''
+      run: pip install twine
