@@ -7,6 +7,7 @@ PROJECT_DIRECTORY = os.path.realpath(os.path.curdir)
 AI_LIGHTNING_REPO_DIR = "lightning_src"
 GITHUB_ACTIONS_WORKFLOWS_DIR = ".github/workflows"
 SPHINX_DOCS_DIR = "docs"
+REPO_TO_REMOTE_FILEPATH = "repo_to_remote_git_server.sh"
 
 
 def remove_filepath(path):
@@ -97,7 +98,9 @@ if __name__ == "__main__":
         else:
             remove_filepath(AI_LIGHTNING_REPO_DIR)
 
-        if not enable_github_actions_ci:
+        if enable_github_actions_ci:
+            remove_filepath(REPO_TO_REMOTE_FILEPATH)
+        else:
             remove_filepath(GITHUB_ACTIONS_WORKFLOWS_DIR)
 
         if not enable_sphinx_docs:
