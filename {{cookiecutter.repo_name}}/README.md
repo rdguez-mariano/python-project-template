@@ -25,8 +25,12 @@ pip install {{ cookiecutter.pkg_name }}
 
 Some choices in our [runner.py](runner.py) are explained in [RUNNER_REASONS.md](RUNNER_REASONS.md)
 
-
 {% endif %}
+
 ## Contributing
 
 If you would like to contribute, please read our [contributing](CONTRIBUTING.md) section.
+
+## Dev Tools
+
+A tldr doc for some useful dev tools is available at [devtools](DEVTOOLS.md).
